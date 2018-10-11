@@ -1,3 +1,6 @@
+@import "~@blueprintjs/core/lib/css/blueprint.css";
+@import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
+
 body {
   margin: 0;
   padding: 0;
@@ -11,4 +14,8 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.bp3-popover-target {
+  display: flex !important;
 }
