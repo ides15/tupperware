@@ -1,9 +1,19 @@
 import React, { Component } from "react";
 
 import styled from "styled-components";
-import { Button, Icon, Collapse, Card } from "@blueprintjs/core";
+import {
+  Button,
+  Icon,
+  Collapse,
+  Card,
+  Tooltip,
+  Position,
+  Tag,
+  ButtonGroup,
+  Toaster
+} from "@blueprintjs/core";
 import { Route } from "react-router-dom";
-import { Flex } from "reflexbox";
+import { Flex, Box } from "reflexbox";
 import _ from "lodash";
 
 import Container from "../Container";
@@ -16,13 +26,22 @@ class Containers extends Component {
   constructor() {
     super();
     this.state = {
-      containers: null
+      containers: []
     };
   }
 
+  showToast = (message, intent) => {
+    const AppToaster = Toaster.create({
+      className: "recipe-toaster",
+      position: Position.TOP_RIGHT
+    });
+
+    AppToaster.show({ message, intent });
+  };
+
   async componentDidMount() {
     this.updateAllContainers();
-    this.update = setInterval(() => this.updateAllContainers(), 15 * 1000);
+    this.update = setInterval(() => this.updateAllContainers(), 30 * 1000);
   }
 
   componentWillUnmount() {
@@ -57,6 +76,40 @@ class Containers extends Component {
     this.setState({ containers });
   };
 
+  deleteStoppedContainers = async () => {
+    let response, status, intent;
+
+    try {
+      response = await fetch("/containers/prune", {
+        method: "POST"
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
+    switch (await response.status) {
+      case 200:
+        const body = await response.json();
+
+        if (body.ContainersDeleted) {
+          status = `${body.ContainersDeleted.length} containers deleted`;
+        } else {
+          status = "No containers were deleted";
+        }
+        intent = "success";
+        break;
+      case 500:
+        status = "Server error";
+        intent = "danger";
+        break;
+      default:
+        status = response.status;
+    }
+
+    this.showToast(status, intent);
+    this.updateAllContainers();
+  };
+
   render() {
     const { containers } = this.state;
 
@@ -67,10 +120,40 @@ class Containers extends Component {
           <Collapse isOpen={match}>
             <Card>
               <Flex justify="space-between" align="center">
-                <Title>Containers</Title>
-                <Button minimal onClick={() => this.updateAllContainers()}>
-                  <Icon icon="refresh" iconSize="20" />
-                </Button>
+                <Flex align="center">
+                  <Title>Containers</Title>
+                  <Box ml={1}>
+                    <Tag large minimal round>
+                      {this.state.containers.length}
+                    </Tag>
+                  </Box>
+                </Flex>
+                <Flex>
+                  <ButtonGroup large>
+                    <Tooltip
+                      position={Position.BOTTOM}
+                      content="Delete stopped containers"
+                    >
+                      <Button
+                        minimal
+                        onClick={() => this.deleteStoppedContainers()}
+                      >
+                        <Icon icon="filter-remove" iconSize="20" />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip
+                      position={Position.BOTTOM}
+                      content="Update all containers"
+                    >
+                      <Button
+                        minimal
+                        onClick={() => this.updateAllContainers()}
+                      >
+                        <Icon icon="refresh" iconSize="20" />
+                      </Button>
+                    </Tooltip>
+                  </ButtonGroup>
+                </Flex>
               </Flex>
               {containers && (
                 <>
@@ -80,6 +163,7 @@ class Containers extends Component {
                       match={match}
                       key={`container-${i}`}
                       updateContainer={this.updateContainer}
+                      showToast={this.showToast}
                     />
                   ))}
                 </>
