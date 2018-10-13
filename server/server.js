@@ -18,6 +18,8 @@ const CONTAINER_START = id => `${DOCKER_SOCK}/containers/${id}/start`;
 const CONTAINER_RESTART = id => `${DOCKER_SOCK}/containers/${id}/restart`;
 const CONTAINER_RENAME = (id, name) =>
   `${DOCKER_SOCK}/containers/${id}/rename?name=${name}`;
+const CONTAINER_PAUSE = id => `${DOCKER_SOCK}/containers/${id}/pause`;
+const CONTAINER_UNPAUSE = id => `${DOCKER_SOCK}/containers/${id}/unpause`;
 
 const IMAGES = `${DOCKER_SOCK}/images/json`;
 
@@ -61,8 +63,6 @@ app.get("/containers/:containerId", async (req, res) => {
 
 app.post("/containers/stop", async (req, res) => {
   console.log(CONTAINER_STOP(req.body.containerId));
-
-  console.log(req.body);
 
   try {
     const data = await got.post(CONTAINER_STOP(req.body.containerId));
@@ -120,6 +120,32 @@ app.post("/containers/:containerId/rename", async (req, res) => {
     const data = await got.post(
       CONTAINER_RENAME(req.params.containerId, req.query.name)
     );
+    console.log(await data.statusCode);
+    res.sendStatus(await data.statusCode);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+app.post("/containers/:containerId/pause", async (req, res) => {
+  console.log(CONTAINER_PAUSE(req.params.containerId));
+
+  try {
+    const data = await got.post(CONTAINER_PAUSE(req.params.containerId));
+    console.log(await data.statusCode);
+    res.sendStatus(await data.statusCode);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+app.post("/containers/:containerId/unpause", async (req, res) => {
+  console.log(CONTAINER_UNPAUSE(req.params.containerId));
+
+  try {
+    const data = await got.post(CONTAINER_UNPAUSE(req.params.containerId));
     console.log(await data.statusCode);
     res.sendStatus(await data.statusCode);
   } catch (error) {

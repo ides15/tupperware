@@ -252,6 +252,70 @@ class Container extends Component {
     this.props.updateContainer(container);
   };
 
+  pauseContainer = async container => {
+    let response, status, intent;
+
+    try {
+      response = await fetch(`/containers/${container.Id}/pause`, {
+        method: "POST"
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
+    switch (await response.status) {
+      case 204:
+        status = `Container paused'`;
+        intent = "success";
+        break;
+      case 404:
+        status = "No such container";
+        intent = "danger";
+        break;
+      case 500:
+        status = "Server error";
+        intent = "danger";
+        break;
+      default:
+        status = response.status;
+    }
+
+    this.showToast(status, intent);
+    this.props.updateContainer(container);
+  };
+
+  unpauseContainer = async container => {
+    let response, status, intent;
+
+    try {
+      response = await fetch(`/containers/${container.Id}/unpause`, {
+        method: "POST"
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
+    switch (await response.status) {
+      case 204:
+        status = `Container unpaused'`;
+        intent = "success";
+        break;
+      case 404:
+        status = "No such container";
+        intent = "danger";
+        break;
+      case 500:
+        status = "Server error";
+        intent = "danger";
+        break;
+      default:
+        status = response.status;
+    }
+
+    this.showToast(status, intent);
+    this.props.updateContainer(container);
+  };
+
   render() {
     const { container, match } = this.props;
     const containerNetworks = container.NetworkSettings.Networks;
@@ -294,17 +358,45 @@ class Container extends Component {
                   <Collapse isOpen={match.params.containerId === container.Id}>
                     <Box mt={2}>
                       <ButtonGroup fill large>
-                        <Tooltip
-                          content="Start container"
-                          position={Position.BOTTOM}
-                        >
-                          <Button
-                            intent="primary"
-                            onClick={() => this.startContainer(container)}
+                        {container.State === "exited" && (
+                          <Tooltip
+                            content="Start container"
+                            position={Position.BOTTOM}
                           >
-                            <Icon icon="play" />
-                          </Button>
-                        </Tooltip>
+                            <Button
+                              intent="primary"
+                              onClick={() => this.startContainer(container)}
+                            >
+                              <Icon icon="play" />
+                            </Button>
+                          </Tooltip>
+                        )}
+                        {container.State === "paused" && (
+                          <Tooltip
+                            content="Unpause container"
+                            position={Position.BOTTOM}
+                          >
+                            <Button
+                              intent="primary"
+                              onClick={() => this.unpauseContainer(container)}
+                            >
+                              <Icon icon="play" />
+                            </Button>
+                          </Tooltip>
+                        )}
+                        {container.State === "running" && (
+                          <Tooltip
+                            content="Pause container"
+                            position={Position.BOTTOM}
+                          >
+                            <Button
+                              intent="primary"
+                              onClick={() => this.pauseContainer(container)}
+                            >
+                              <Icon icon="pause" />
+                            </Button>
+                          </Tooltip>
+                        )}
                         <Tooltip
                           content="Restart container"
                           position={Position.BOTTOM}
