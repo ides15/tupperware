@@ -1,0 +1,149 @@
+const router = require("express").Router();
+const got = require("got");
+
+const DOCKER_SOCK = process.env.REACT_APP_DOCKER_SOCK;
+
+const CONTAINERS = `${DOCKER_SOCK}/containers/json?all=true`;
+const CONTAINER_STOP = id => `${DOCKER_SOCK}/containers/${id}/stop`;
+const CONTAINER_PRUNE = `${DOCKER_SOCK}/containers/prune`;
+const CONTAINER = id =>
+  `${DOCKER_SOCK}/containers/json?all=true&filters={"id":["${id}"]}`;
+const CONTAINER_REMOVE = id => `${DOCKER_SOCK}/containers/${id}`;
+const CONTAINER_START = id => `${DOCKER_SOCK}/containers/${id}/start`;
+const CONTAINER_RESTART = id => `${DOCKER_SOCK}/containers/${id}/restart`;
+const CONTAINER_RENAME = (id, name) =>
+  `${DOCKER_SOCK}/containers/${id}/rename?name=${name}`;
+const CONTAINER_PAUSE = id => `${DOCKER_SOCK}/containers/${id}/pause`;
+const CONTAINER_UNPAUSE = id => `${DOCKER_SOCK}/containers/${id}/unpause`;
+
+router.get("/", async (req, res) => {
+  console.log(CONTAINERS);
+
+  try {
+    const data = await got(CONTAINERS);
+    res.send(data.body);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.post("/stop", async (req, res) => {
+  console.log(CONTAINER_STOP(req.body.containerId));
+
+  try {
+    const data = await got.post(CONTAINER_STOP(req.body.containerId));
+    console.log(await data.statusCode);
+    res.sendStatus(await data.statusCode);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+router.post("/prune", async (req, res) => {
+  console.log("-----------------here---------------");
+  console.log(CONTAINER_PRUNE);
+
+  try {
+    const data = await got.post(CONTAINER_PRUNE);
+    console.log(await data.body);
+    res.send(await data.body);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+router.get("/:containerId", async (req, res) => {
+  console.log(CONTAINER(req.params.containerId));
+
+  try {
+    const data = await got(CONTAINER(req.params.containerId));
+    console.log(data.body);
+    res.send(data.body);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.delete("/:containerId", async (req, res) => {
+  console.log(CONTAINER_REMOVE(req.params.containerId));
+
+  try {
+    const data = await got.delete(CONTAINER_REMOVE(req.params.containerId));
+    console.log(await data.statusCode);
+    res.sendStatus(await data.statusCode);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+router.post("/:containerId", async (req, res) => {
+  console.log(CONTAINER_START(req.params.containerId));
+
+  try {
+    const data = await got.post(CONTAINER_START(req.params.containerId));
+    console.log(await data.statusCode);
+    res.sendStatus(await data.statusCode);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+router.post("/:containerId/restart", async (req, res) => {
+  console.log(CONTAINER_RESTART(req.params.containerId));
+
+  try {
+    const data = await got.post(CONTAINER_RESTART(req.params.containerId));
+    console.log(await data.statusCode);
+    res.sendStatus(await data.statusCode);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+router.post("/:containerId/rename", async (req, res) => {
+  console.log(CONTAINER_RENAME(req.params.containerId, req.query.name));
+
+  try {
+    const data = await got.post(
+      CONTAINER_RENAME(req.params.containerId, req.query.name)
+    );
+    console.log(await data.statusCode);
+    res.sendStatus(await data.statusCode);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+router.post("/:containerId/pause", async (req, res) => {
+  console.log(CONTAINER_PAUSE(req.params.containerId));
+
+  try {
+    const data = await got.post(CONTAINER_PAUSE(req.params.containerId));
+    console.log(await data.statusCode);
+    res.sendStatus(await data.statusCode);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+router.post("/:containerId/unpause", async (req, res) => {
+  console.log(CONTAINER_UNPAUSE(req.params.containerId));
+
+  try {
+    const data = await got.post(CONTAINER_UNPAUSE(req.params.containerId));
+    console.log(await data.statusCode);
+    res.sendStatus(await data.statusCode);
+  } catch (error) {
+    res.sendStatus(error.statusCode);
+    console.error("Error", error);
+  }
+});
+
+module.exports = router;
