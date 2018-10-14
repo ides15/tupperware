@@ -1,0 +1,14 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/got": "^8.3.4",
+    "express": "^4.16.4",
+    "got": "^9.2.2"
+  }
+}

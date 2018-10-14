@@ -10,9 +10,9 @@ const Link = styled(L)`
   }
 `;
 
-const APIButton = ({ route, intent, children }) => (
+const APIButton = ({ route, icon, intent, children }) => (
   <Link to={route}>
-    <Button large intent={intent}>
+    <Button icon={icon} minimal large intent={intent}>
       {children}
     </Button>
   </Link>

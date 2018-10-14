@@ -32,36 +32,36 @@ const App = () => {
             <Navbar>
               <NavbarGroup>
                 <NavbarHeading>Tupperware</NavbarHeading>
+                <ButtonGroup>
+                  <APIButton route="/info" icon="info-sign" intent="primary">
+                    Info
+                  </APIButton>
+                  <APIButton route="/containers" icon="box" intent="warning">
+                    Containers
+                  </APIButton>
+                  <APIButton route="/images" icon="application" intent="danger">
+                    Images
+                  </APIButton>
+                  <APIButton
+                    route="/networks"
+                    icon="globe-network"
+                    intent="success"
+                  >
+                    Networks
+                  </APIButton>
+                  <APIButton route="/volumes" icon="database">
+                    Volumes
+                  </APIButton>
+                </ButtonGroup>
               </NavbarGroup>
             </Navbar>
           </DarkContainer>
         </Box>
-        <Box>
-          <Box w={1} p={2}>
-            <ButtonGroup>
-              <APIButton route="/info" intent="primary">
-                Info
-              </APIButton>
-              <APIButton route="/containers" intent="warning">
-                Containers
-              </APIButton>
-              <APIButton route="/images" intent="danger">
-                Images
-              </APIButton>
-              <APIButton route="/networks" intent="success">
-                Networks
-              </APIButton>
-              <APIButton route="/volumes">Volumes</APIButton>
-            </ButtonGroup>
-            <Box mt={2}>
-              <Info />
-              <Containers />
-              <Images />
-              <Networks />
-              <Volumes />
-            </Box>
-          </Box>
-        </Box>
+        <Info />
+        <Containers />
+        <Images />
+        <Networks />
+        <Volumes />
       </Flex>
     </Router>
   );

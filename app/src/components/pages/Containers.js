@@ -2,10 +2,10 @@ import React, { Component } from "react";
 
 import styled from "styled-components";
 import {
+  AnchorButton,
   Button,
   Icon,
   Collapse,
-  Card,
   Tooltip,
   Position,
   Tag,
@@ -17,6 +17,7 @@ import { Flex, Box } from "reflexbox";
 import _ from "lodash";
 
 import Container from "../Container";
+import CreateContainer from "../CreateContainer";
 
 const Title = styled.h2`
   margin: 0;
@@ -26,14 +27,19 @@ class Containers extends Component {
   constructor() {
     super();
     this.state = {
-      containers: []
+      containers: [],
+      createContainerIsOpen: false
     };
   }
+
+  setCreateContainerIsOpen = open => {
+    this.setState({ createContainerIsOpen: open });
+  };
 
   showToast = (message, intent) => {
     const AppToaster = Toaster.create({
       className: "recipe-toaster",
-      position: Position.TOP_RIGHT
+      position: Position.BOTTOM
     });
 
     AppToaster.show({ message, intent });
@@ -49,14 +55,14 @@ class Containers extends Component {
   }
 
   updateAllContainers = async () => {
-    const containers = await fetch("/containers");
+    const containers = await fetch("/api/containers");
     this.setState({ containers: await containers.json() });
   };
 
   updateContainer = async container => {
     let newContainer;
     try {
-      newContainer = await fetch(`/containers/${container.Id}`);
+      newContainer = await fetch(`/api/containers/${container.Id}`);
       newContainer = await newContainer.json();
     } catch (error) {
       console.error(error);
@@ -80,7 +86,7 @@ class Containers extends Component {
     let response, status, intent;
 
     try {
-      response = await fetch("/containers/prune", {
+      response = await fetch("/api/containers/prune", {
         method: "POST"
       });
     } catch (error) {
@@ -118,7 +124,7 @@ class Containers extends Component {
         path="/containers"
         render={({ match }) => (
           <Collapse isOpen={match}>
-            <Card>
+            <Box p={2}>
               <Flex justify="space-between" align="center">
                 <Flex align="center">
                   <Title>Containers</Title>
@@ -130,6 +136,20 @@ class Containers extends Component {
                 </Flex>
                 <Flex>
                   <ButtonGroup large>
+                    <Tooltip
+                      position={Position.BOTTOM}
+                      content="Create a container"
+                    >
+                      <AnchorButton
+                        large
+                        disabled
+                        intent="primary"
+                        icon="plus"
+                        onClick={() => this.setCreateContainerIsOpen(true)}
+                      >
+                        Create
+                      </AnchorButton>
+                    </Tooltip>
                     <Tooltip
                       position={Position.BOTTOM}
                       content="Delete stopped containers"
@@ -168,7 +188,11 @@ class Containers extends Component {
                   ))}
                 </>
               )}
-            </Card>
+              <CreateContainer
+                isOpen={this.state.createContainerIsOpen}
+                setCreateContainerIsOpen={this.setCreateContainerIsOpen}
+              />
+            </Box>
           </Collapse>
         )}
       />

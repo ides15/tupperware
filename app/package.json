@@ -4,10 +4,7 @@
   "private": true,
   "dependencies": {
     "@blueprintjs/core": "^3.7.0",
-    "axios": "^0.18.0",
-    "body-parser": "^1.18.3",
-    "express": "^4.16.3",
-    "got": "^9.2.2",
+    "@blueprintjs/select": "^3.2.0",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",
     "react": "^16.5.2",
@@ -15,13 +12,11 @@
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.0.4",
-    "redux": "^4.0.0",
-    "redux-logger": "^3.0.6",
     "reflexbox": "^3.0.1",
     "styled-components": "^3.4.9"
   },
   "scripts": {
-    "start": "concurrently 'react-scripts start' 'nodemon server/server.js'",
+    "start": "concurrently 'react-scripts start' 'nodemon ../server/server.js'",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -35,9 +30,8 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "proxy": "http://localhost:4000",
+  "proxy": "http://localhost:8888",
   "devDependencies": {
-    "@types/got": "^8.3.4",
     "concurrently": "^4.0.1",
     "nodemon": "^1.18.4"
   }

@@ -14,7 +14,7 @@ class Info extends Component {
   }
 
   async componentDidMount() {
-    const info = await fetch("/info");
+    const info = await fetch("/api/info");
     this.setState({ info: await info.json() });
   }
 

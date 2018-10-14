@@ -2,10 +2,10 @@ import React, { Component } from "react";
 
 import styled from "styled-components";
 import {
+  FocusStyleManager,
   Collapse,
-  Card,
-  Icon,
-  Button,
+  Card as C,
+  AnchorButton,
   ButtonGroup,
   Position,
   Tooltip as T,
@@ -18,6 +18,11 @@ import moment from "moment";
 
 const Tooltip = styled(T)`
   flex: 1;
+`;
+
+const Card = styled(C)`
+  padding-top: 0;
+  padding-bottom: 0;
 `;
 
 const Name = styled.h3`
@@ -35,10 +40,18 @@ const exists = data => {
 
 class Container extends Component {
   state = {
-    isOpen: false
+    isOpen: false,
+    startIsLoading: false,
+    unpauseIsLoading: false,
+    pauseIsLoading: false,
+    restartIsLoading: false,
+    stopIsLoading: false,
+    removeIsLoading: false
   };
 
   componentDidMount() {
+    FocusStyleManager.onlyShowFocusOnTabs();
+
     const openContainers = JSON.parse(localStorage.getItem("openContainers"));
 
     if (openContainers && openContainers.includes(this.props.container.Id)) {
@@ -96,11 +109,13 @@ class Container extends Component {
     });
   };
 
-  stopContainer = async container => {
+  stopContainer = async (e, container) => {
+    this.setState({ stopIsLoading: true });
+    e.stopPropagation();
     let response, status, intent;
 
     try {
-      response = await fetch("/containers/stop", {
+      response = await fetch("/api/containers/stop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ containerId: container.Id })
@@ -132,13 +147,16 @@ class Container extends Component {
 
     this.props.showToast(status, intent);
     this.props.updateContainer(container);
+    this.setState({ stopIsLoading: false });
   };
 
-  removeContainer = async container => {
+  removeContainer = async (e, container) => {
+    this.setState({ removeIsLoading: true });
+    e.stopPropagation();
     let response, status, intent;
 
     try {
-      response = await fetch(`/containers/${container.Id}`, {
+      response = await fetch(`/api/containers/${container.Id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" }
       });
@@ -160,7 +178,7 @@ class Container extends Component {
         intent = "danger";
         break;
       case 409:
-        status = "You cannot remove a running container.";
+        status = "You cannot remove a running container";
         intent = "warning";
         break;
       case 500:
@@ -172,16 +190,18 @@ class Container extends Component {
     }
 
     this.props.showToast(status, intent);
+    this.setOpen(false);
     this.props.updateContainer(container);
-
-    if ((await response.status) === 204) this.toContainers();
+    this.setState({ removeIsLoading: false });
   };
 
-  startContainer = async container => {
+  startContainer = async (e, container) => {
+    this.setState({ startIsLoading: true });
+    e.stopPropagation();
     let response, status, intent;
 
     try {
-      response = await fetch(`/containers/${container.Id}`, {
+      response = await fetch(`/api/containers/${container.Id}`, {
         method: "POST"
       });
     } catch (error) {
@@ -211,13 +231,16 @@ class Container extends Component {
 
     this.props.showToast(status, intent);
     this.props.updateContainer(container);
+    this.setState({ startIsLoading: false });
   };
 
-  restartContainer = async container => {
+  restartContainer = async (e, container) => {
+    this.setState({ restartIsLoading: true });
+    e.stopPropagation();
     let response, status, intent;
 
     try {
-      response = await fetch(`/containers/${container.Id}/restart`, {
+      response = await fetch(`/api/containers/${container.Id}/restart`, {
         method: "POST"
       });
     } catch (error) {
@@ -243,14 +266,18 @@ class Container extends Component {
 
     this.props.showToast(status, intent);
     this.props.updateContainer(container);
+    this.setState({ restartIsLoading: false });
   };
 
   renameContainer = async (container, name) => {
     let response, status, intent;
 
+    // If the use clicks away without changing anything
+    if (container.Names[0] === name) return;
+
     try {
       response = await fetch(
-        `/containers/${container.Id}/rename?name=${name}`,
+        `/api/containers/${container.Id}/rename?name=${name}`,
         {
           method: "POST"
         }
@@ -288,11 +315,13 @@ class Container extends Component {
     this.props.updateContainer(container);
   };
 
-  pauseContainer = async container => {
+  pauseContainer = async (e, container) => {
+    this.setState({ pauseIsLoading: true });
+    e.stopPropagation();
     let response, status, intent;
 
     try {
-      response = await fetch(`/containers/${container.Id}/pause`, {
+      response = await fetch(`/api/containers/${container.Id}/pause`, {
         method: "POST"
       });
     } catch (error) {
@@ -318,13 +347,16 @@ class Container extends Component {
 
     this.props.showToast(status, intent);
     this.props.updateContainer(container);
+    this.setState({ pauseIsLoading: false });
   };
 
-  unpauseContainer = async container => {
+  unpauseContainer = async (e, container) => {
+    this.setState({ unpauseIsLoading: true });
+    e.stopPropagation();
     let response, status, intent;
 
     try {
-      response = await fetch(`/containers/${container.Id}/unpause`, {
+      response = await fetch(`/api/containers/${container.Id}/unpause`, {
         method: "POST"
       });
     } catch (error) {
@@ -350,6 +382,7 @@ class Container extends Component {
 
     this.props.showToast(status, intent);
     this.props.updateContainer(container);
+    this.setState({ unpauseIsLoading: false });
   };
 
   render() {
@@ -363,9 +396,14 @@ class Container extends Component {
 
     return (
       <Box mt={1}>
-        <Card interactive onClick={() => this.setOpen()}>
+        <Card interactive>
           {container.Names.map((name, j) => (
-            <Flex justify="space-between" key={container.Id}>
+            <Flex
+              py={1}
+              justify="space-between"
+              key={container.Id}
+              onClick={() => this.setOpen()}
+            >
               <Flex align="center">
                 <Box mr={2}>
                   <Tag intent="primary" round>
@@ -382,79 +420,121 @@ class Container extends Component {
                 </Name>
                 <Box ml={2}>{container.Status}</Box>
               </Flex>
+              <Flex align="center">
+                <ButtonGroup fill large>
+                  {container.State === "exited" && (
+                    <Tooltip
+                      content="Start container"
+                      position={Position.BOTTOM}
+                    >
+                      <AnchorButton
+                        minimal
+                        loading={this.state.startIsLoading}
+                        icon="play"
+                        intent="primary"
+                        onClick={e => this.startContainer(e, container)}
+                      />
+                    </Tooltip>
+                  )}
+                  {container.State === "paused" && (
+                    <Tooltip
+                      content="Unpause container"
+                      position={Position.BOTTOM}
+                    >
+                      <AnchorButton
+                        minimal
+                        loading={this.state.unpauseIsLoading}
+                        icon="play"
+                        intent="primary"
+                        onClick={e => this.unpauseContainer(e, container)}
+                      />
+                    </Tooltip>
+                  )}
+                  {container.State === "running" && (
+                    <Tooltip
+                      content="Pause container"
+                      position={Position.BOTTOM}
+                    >
+                      <AnchorButton
+                        minimal
+                        loading={this.state.pauseIsLoading}
+                        icon="pause"
+                        intent="primary"
+                        onClick={e => this.pauseContainer(e, container)}
+                      />
+                    </Tooltip>
+                  )}
+                  <Tooltip
+                    content="Restart container"
+                    position={Position.BOTTOM}
+                    isDisabled
+                  >
+                    <AnchorButton
+                      minimal
+                      loading={this.state.restartIsLoading}
+                      icon="refresh"
+                      intent="warning"
+                      onClick={e => this.restartContainer(e, container)}
+                    />
+                  </Tooltip>
+                  {container.State !== "exited" && (
+                    <Tooltip
+                      content="Stop container"
+                      position={Position.BOTTOM}
+                    >
+                      <AnchorButton
+                        minimal
+                        loading={this.state.stopIsLoading}
+                        icon="stop"
+                        intent="danger"
+                        onClick={e => this.stopContainer(e, container)}
+                      />
+                    </Tooltip>
+                  )}
+                  <Tooltip
+                    content="Remove container"
+                    position={Position.BOTTOM}
+                  >
+                    <AnchorButton
+                      minimal
+                      loading={this.state.removeIsLoading}
+                      icon="trash"
+                      intent="danger"
+                      onClick={e => this.removeContainer(e, container)}
+                    />
+                  </Tooltip>
+                </ButtonGroup>
+                {container.Ports[0] &&
+                  container.Ports[0].IP && (
+                    <Tooltip content="Open site" position={Position.BOTTOM}>
+                      <AnchorButton
+                        minimal
+                        large
+                        icon="share"
+                        onClick={e => {
+                          e.stopPropagation();
+                          window.open(
+                            `http://${container.Ports[0].IP}:${
+                              container.Ports[0].PublicPort
+                            }`,
+                            "_blank"
+                          );
+                        }}
+                      />
+                    </Tooltip>
+                  )}
+              </Flex>
             </Flex>
           ))}
           <Collapse isOpen={this.state.isOpen}>
-            <Box mt={2}>
-              <ButtonGroup fill large>
-                {container.State === "exited" && (
-                  <Tooltip content="Start container" position={Position.BOTTOM}>
-                    <Button
-                      intent="primary"
-                      onClick={() => this.startContainer(container)}
-                    >
-                      <Icon icon="play" />
-                    </Button>
-                  </Tooltip>
-                )}
-                {container.State === "paused" && (
-                  <Tooltip
-                    content="Unpause container"
-                    position={Position.BOTTOM}
-                  >
-                    <Button
-                      intent="primary"
-                      onClick={() => this.unpauseContainer(container)}
-                    >
-                      <Icon icon="play" />
-                    </Button>
-                  </Tooltip>
-                )}
-                {container.State === "running" && (
-                  <Tooltip content="Pause container" position={Position.BOTTOM}>
-                    <Button
-                      intent="primary"
-                      onClick={() => this.pauseContainer(container)}
-                    >
-                      <Icon icon="pause" />
-                    </Button>
-                  </Tooltip>
-                )}
-                <Tooltip content="Restart container" position={Position.BOTTOM}>
-                  <Button
-                    intent="warning"
-                    onClick={() => this.restartContainer(container)}
-                  >
-                    <Icon icon="refresh" />
-                  </Button>
-                </Tooltip>
-                {container.State !== "exited" && (
-                  <Tooltip content="Stop container" position={Position.BOTTOM}>
-                    <Button
-                      intent="danger"
-                      onClick={() => this.stopContainer(container)}
-                    >
-                      <Icon icon="stop" />
-                    </Button>
-                  </Tooltip>
-                )}
-                <Tooltip content="Remove container" position={Position.BOTTOM}>
-                  <Button
-                    intent="danger"
-                    onClick={() => this.removeContainer(container)}
-                  >
-                    <Icon icon="trash" />
-                  </Button>
-                </Tooltip>
-              </ButtonGroup>
-            </Box>
-            <Flex pt={2}>
+            <Flex pt={1}>
               <Flex w={1 / 5} column>
                 <p>ID</p>
                 <p>Created</p>
                 <p>Command</p>
                 <p>Image ID</p>
                 <Box mt={2}>
+                  <p>Size</p>
                   <p>State</p>
                   <p>Status</p>
                 </Box>
@@ -469,6 +549,7 @@ class Container extends Component {
                 <P>{container.Command}</P>
                 <P>{_.truncate(container.ImageID)}</P>
                 <Box mt={2}>
+                  <P>{(container.SizeRootFs / 1000000).toFixed(1)} mb</P>
                   <P>{container.State}</P>
                   <P>{container.Status}</P>
                 </Box>
@@ -476,7 +557,7 @@ class Container extends Component {
             </Flex>
             <Flex mt={2} column>
               <h3>Networks</h3>
-              <Flex>
+              <Flex pb={1}>
                 {networks.map((network, i) => {
                   return (
                     <React.Fragment key={`network-${i}`}>
