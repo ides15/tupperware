@@ -3,7 +3,7 @@ const got = require("got");
 
 const DOCKER_SOCK = process.env.REACT_APP_DOCKER_SOCK;
 
-const CONTAINERS = `${DOCKER_SOCK}/containers/json?all=true`;
+const CONTAINERS = `${DOCKER_SOCK}/containers/json?all=true&size=true`;
 const CONTAINER_STOP = id => `${DOCKER_SOCK}/containers/${id}/stop`;
 const CONTAINER_PRUNE = `${DOCKER_SOCK}/containers/prune`;
 const CONTAINER = id =>
@@ -32,7 +32,6 @@ router.post("/stop", async (req, res) => {
 
   try {
     const data = await got.post(CONTAINER_STOP(req.body.containerId));
-    console.log(await data.statusCode);
     res.sendStatus(await data.statusCode);
   } catch (error) {
     res.sendStatus(error.statusCode);
@@ -46,7 +45,6 @@ router.post("/prune", async (req, res) => {
 
   try {
     const data = await got.post(CONTAINER_PRUNE);
-    console.log(await data.body);
     res.send(await data.body);
   } catch (error) {
     res.sendStatus(error.statusCode);
@@ -59,7 +57,6 @@ router.get("/:containerId", async (req, res) => {
 
   try {
     const data = await got(CONTAINER(req.params.containerId));
-    console.log(data.body);
     res.send(data.body);
   } catch (error) {
     console.error(error);
@@ -71,7 +68,6 @@ router.delete("/:containerId", async (req, res) => {
 
   try {
     const data = await got.delete(CONTAINER_REMOVE(req.params.containerId));
-    console.log(await data.statusCode);
     res.sendStatus(await data.statusCode);
   } catch (error) {
     res.sendStatus(error.statusCode);
@@ -84,7 +80,6 @@ router.post("/:containerId", async (req, res) => {
 
   try {
     const data = await got.post(CONTAINER_START(req.params.containerId));
-    console.log(await data.statusCode);
     res.sendStatus(await data.statusCode);
   } catch (error) {
     res.sendStatus(error.statusCode);
@@ -97,7 +92,6 @@ router.post("/:containerId/restart", async (req, res) => {
 
   try {
     const data = await got.post(CONTAINER_RESTART(req.params.containerId));
-    console.log(await data.statusCode);
     res.sendStatus(await data.statusCode);
   } catch (error) {
     res.sendStatus(error.statusCode);
@@ -112,7 +106,6 @@ router.post("/:containerId/rename", async (req, res) => {
     const data = await got.post(
       CONTAINER_RENAME(req.params.containerId, req.query.name)
     );
-    console.log(await data.statusCode);
     res.sendStatus(await data.statusCode);
   } catch (error) {
     res.sendStatus(error.statusCode);
@@ -125,7 +118,6 @@ router.post("/:containerId/pause", async (req, res) => {
 
   try {
     const data = await got.post(CONTAINER_PAUSE(req.params.containerId));
-    console.log(await data.statusCode);
     res.sendStatus(await data.statusCode);
   } catch (error) {
     res.sendStatus(error.statusCode);
@@ -138,7 +130,6 @@ router.post("/:containerId/unpause", async (req, res) => {
 
   try {
     const data = await got.post(CONTAINER_UNPAUSE(req.params.containerId));
-    console.log(await data.statusCode);
     res.sendStatus(await data.statusCode);
   } catch (error) {
     res.sendStatus(error.statusCode);

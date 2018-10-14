@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const bodyParser = require("body-parser");
 
 const app = express();
@@ -13,10 +14,15 @@ const images = require("./routes/images");
 const networks = require("./routes/networks");
 const volumes = require("./routes/volumes");
 
-app.use("/info", info);
-app.use("/containers", containers);
-app.use("/images", images);
-app.use("/networks", networks);
-app.use("/volumes", volumes);
+app.use("/api/info", info);
+app.use("/api/containers", containers);
+app.use("/api/images", images);
+app.use("/api/networks", networks);
+app.use("/api/volumes", volumes);
 
-app.listen(4000, () => console.log("Serving on *4000..."));
+app.use(express.static(path.join(__dirname, "../build")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+});
+
+app.listen(8888, () => console.log("Serving on *8888..."));
