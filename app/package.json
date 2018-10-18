@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "concurrently 'react-scripts start' 'nodemon ../server/server.js'",
-    "build": "react-scripts build",
+    "build": "react-scripts build && mv build ../server",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -30,7 +30,7 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "proxy": "http://localhost:8888",
+  "proxy": "http://localhost:4000",
   "devDependencies": {
     "concurrently": "^4.0.1",
     "nodemon": "^1.18.4"
