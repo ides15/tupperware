@@ -20,9 +20,15 @@ app.use("/api/images", images);
 app.use("/api/networks", networks);
 app.use("/api/volumes", volumes);
 
-app.use(express.static(path.join(__dirname, "../build")));
+app.use(express.static(path.join(__dirname, "build")));
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+  res.sendFile(path.join(__dirname, "build", "favicon.ico"));
 });
 
-app.listen(8888, () => console.log("Serving on *8888..."));
+let port;
+process.env.NODE_ENV && process.env.NODE_ENV === "production"
+  ? (port = 8888)
+  : (port = 4000);
+
+app.listen(port, () => console.log(`Serving on *${port}...`));
