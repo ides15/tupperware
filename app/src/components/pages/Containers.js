@@ -32,6 +32,15 @@ class Containers extends Component {
     };
   }
 
+  async componentDidMount() {
+    this.updateAllContainers();
+    this.update = setInterval(() => this.updateAllContainers(), 30 * 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.update);
+  }
+
   setCreateContainerIsOpen = open => {
     this.setState({ createContainerIsOpen: open });
   };
@@ -44,15 +53,6 @@ class Containers extends Component {
 
     AppToaster.show({ message, intent });
   };
-
-  async componentDidMount() {
-    this.updateAllContainers();
-    this.update = setInterval(() => this.updateAllContainers(), 30 * 1000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.update);
-  }
 
   updateAllContainers = async () => {
     const containers = await fetch("/api/containers");

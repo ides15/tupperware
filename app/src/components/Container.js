@@ -2,7 +2,6 @@ import React, { Component } from "react";
 
 import styled from "styled-components";
 import {
-  FocusStyleManager,
   Collapse,
   Card as C,
   AnchorButton,
@@ -50,8 +49,6 @@ class Container extends Component {
   };
 
   componentDidMount() {
-    FocusStyleManager.onlyShowFocusOnTabs();
-
     const openContainers = JSON.parse(localStorage.getItem("openContainers"));
 
     if (openContainers && openContainers.includes(this.props.container.Id)) {
