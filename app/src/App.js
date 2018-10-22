@@ -26,7 +26,7 @@ const App = () => {
   return (
     <Router>
       <Flex column>
-        <Route exact path="/" render={() => <Redirect to="/info" />} />
+        <Route exact path="/" render={() => <Redirect to="/containers" />} />
         <Box>
           <DarkContainer>
             <Navbar>
