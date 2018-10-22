@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { Collapse, Card } from "@blueprintjs/core";
 import { Route } from "react-router-dom";
-import { Flex } from "reflexbox";
+// import { Flex } from "reflexbox";
 
 class Info extends Component {
   constructor() {
@@ -19,7 +19,7 @@ class Info extends Component {
   }
 
   render() {
-    const { info } = this.state;
+    // const { info } = this.state;
 
     return (
       <Route
@@ -28,7 +28,7 @@ class Info extends Component {
           <Collapse isOpen={match}>
             <Card>
               <h2>Info</h2>
-              {info && (
+              {/* {info && (
                 <Flex column>
                   <Flex>
                     Name
@@ -39,7 +39,7 @@ class Info extends Component {
                     {info.OSType}, {info.OperatingSystem}
                   </Flex>
                 </Flex>
-              )}
+              )} */}
             </Card>
           </Collapse>
         )}

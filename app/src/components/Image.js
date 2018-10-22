@@ -11,8 +11,10 @@ import {
   Tooltip,
   Position,
   AnchorButton,
-  Collapse
+  Collapse,
+  Icon
 } from "@blueprintjs/core";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const Card = styled(C)`
   padding-top: 0;
@@ -27,15 +29,13 @@ const P = styled.p`
   font-weight: bold;
 `;
 
-const exists = data => {
-  if (data) return <P>{data}</P>;
-  return <p>n/a</p>;
-};
-
 class Image extends Component {
   state = {
     isOpen: false,
-    removeIsLoading: false
+    disabled: false,
+    removeIsLoading: false,
+    imageIdHovered: false,
+    parentIdHovered: false
   };
 
   componentDidMount() {
@@ -44,6 +44,9 @@ class Image extends Component {
     if (openImages && openImages.includes(this.props.image.Id)) {
       this.setOpen(true);
     }
+
+    if (this.props.image.RepoTags[0].includes("ides15/tupperware"))
+      this.setState({ disabled: true });
   }
 
   saveToStorage = id => {
@@ -120,7 +123,7 @@ class Image extends Component {
         intent = "danger";
         break;
       case 409:
-        status = "You cannot remove images that are being used in containers";
+        status = "You cannot remove this image";
         intent = "warning";
         break;
       case 500:
@@ -167,6 +170,7 @@ class Image extends Component {
                     isDisabled
                   >
                     <AnchorButton
+                      disabled={this.state.disabled}
                       minimal
                       loading={this.state.removeIsLoading}
                       icon="trash"
@@ -185,8 +189,44 @@ class Image extends Component {
                 <p>Parent ID</p>
               </Flex>
               <Flex w={7 / 8} column>
-                {exists(image.Id)}
-                {exists(image.ParentId)}
+                <Flex>
+                  <CopyToClipboard text={image.Id}>
+                    <P
+                      onMouseOver={() =>
+                        this.setState({ imageIdHovered: true })
+                      }
+                      onMouseLeave={() =>
+                        this.setState({ imageIdHovered: false })
+                      }
+                    >
+                      {image.Id}
+                    </P>
+                  </CopyToClipboard>
+                  {this.state.imageIdHovered && (
+                    <Box ml={1}>
+                      <Icon icon="duplicate" />
+                    </Box>
+                  )}
+                </Flex>
+                <Flex>
+                  <CopyToClipboard text={image.ParentId}>
+                    <P
+                      onMouseOver={() =>
+                        this.setState({ parentIdHovered: true })
+                      }
+                      onMouseLeave={() =>
+                        this.setState({ parentIdHovered: false })
+                      }
+                    >
+                      {image.ParentId}
+                    </P>
+                  </CopyToClipboard>
+                  {this.state.parentIdHovered && (
+                    <Box ml={1}>
+                      <Icon icon="duplicate" />
+                    </Box>
+                  )}
+                </Flex>
               </Flex>
             </Flex>
           </Collapse>

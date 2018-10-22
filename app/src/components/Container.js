@@ -9,11 +9,13 @@ import {
   Position,
   Tooltip as T,
   Tag,
-  EditableText
+  EditableText,
+  Icon
 } from "@blueprintjs/core";
 import { Flex, Box } from "reflexbox";
 import _ from "lodash";
 import moment from "moment";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const Tooltip = styled(T)`
   flex: 1;
@@ -40,12 +42,15 @@ const exists = data => {
 class Container extends Component {
   state = {
     isOpen: false,
+    disabled: false,
     startIsLoading: false,
     unpauseIsLoading: false,
     pauseIsLoading: false,
     restartIsLoading: false,
     stopIsLoading: false,
-    removeIsLoading: false
+    removeIsLoading: false,
+    containerIdHovered: false,
+    imageIdHovered: false
   };
 
   componentDidMount() {
@@ -54,6 +59,9 @@ class Container extends Component {
     if (openContainers && openContainers.includes(this.props.container.Id)) {
       this.setOpen(true);
     }
+
+    if (this.props.container.Image.includes("ides15/tupperware"))
+      this.setState({ disabled: true });
   }
 
   saveToStorage = id => {
@@ -382,6 +390,11 @@ class Container extends Component {
     this.setState({ unpauseIsLoading: false });
   };
 
+  copyToClipboard = () => {
+    this.containerId.select();
+    document.execCommand("copy");
+  };
+
   render() {
     const { container } = this.props;
     const containerNetworks = container.NetworkSettings.Networks;
@@ -425,6 +438,7 @@ class Container extends Component {
                       position={Position.BOTTOM}
                     >
                       <AnchorButton
+                        disabled={this.state.disabled}
                         minimal
                         loading={this.state.startIsLoading}
                         icon="play"
@@ -439,6 +453,7 @@ class Container extends Component {
                       position={Position.BOTTOM}
                     >
                       <AnchorButton
+                        disabled={this.state.disabled}
                         minimal
                         loading={this.state.unpauseIsLoading}
                         icon="play"
@@ -453,6 +468,7 @@ class Container extends Component {
                       position={Position.BOTTOM}
                     >
                       <AnchorButton
+                        disabled={this.state.disabled}
                         minimal
                         loading={this.state.pauseIsLoading}
                         icon="pause"
@@ -467,6 +483,7 @@ class Container extends Component {
                     isDisabled
                   >
                     <AnchorButton
+                      disabled={this.state.disabled}
                       minimal
                       loading={this.state.restartIsLoading}
                       icon="refresh"
@@ -480,6 +497,7 @@ class Container extends Component {
                       position={Position.BOTTOM}
                     >
                       <AnchorButton
+                        disabled={this.state.disabled}
                         minimal
                         loading={this.state.stopIsLoading}
                         icon="stop"
@@ -493,6 +511,7 @@ class Container extends Component {
                     position={Position.BOTTOM}
                   >
                     <AnchorButton
+                      disabled={this.state.disabled}
                       minimal
                       loading={this.state.removeIsLoading}
                       icon="trash"
@@ -525,7 +544,7 @@ class Container extends Component {
           ))}
           <Collapse isOpen={this.state.isOpen}>
             <Flex pt={1}>
-              <Flex w={1 / 5} column>
+              <Flex w={1 / 8} column>
                 <p>ID</p>
                 <p>Created</p>
                 <p>Command</p>
@@ -536,15 +555,51 @@ class Container extends Component {
                   <p>Status</p>
                 </Box>
               </Flex>
-              <Flex w={4 / 5} column>
-                <P>{_.truncate(container.Id)}</P>
+              <Flex w={7 / 8} column>
+                <Flex>
+                  <CopyToClipboard text={container.Id}>
+                    <P
+                      onMouseOver={() =>
+                        this.setState({ containerIdHovered: true })
+                      }
+                      onMouseLeave={() =>
+                        this.setState({ containerIdHovered: false })
+                      }
+                    >
+                      {container.Id}
+                    </P>
+                  </CopyToClipboard>
+                  {this.state.containerIdHovered && (
+                    <Box ml={1}>
+                      <Icon icon="duplicate" />
+                    </Box>
+                  )}
+                </Flex>
                 <P>
                   {moment
                     .unix(container.Created)
                     .format("h:mm:ss a on dddd, MMMM Do YYYY")}
                 </P>
                 <P>{container.Command}</P>
-                <P>{_.truncate(container.ImageID)}</P>
+                <Flex>
+                  <CopyToClipboard text={container.ImageID}>
+                    <P
+                      onMouseOver={() =>
+                        this.setState({ imageIdHovered: true })
+                      }
+                      onMouseLeave={() =>
+                        this.setState({ imageIdHovered: false })
+                      }
+                    >
+                      {container.ImageID}
+                    </P>
+                  </CopyToClipboard>
+                  {this.state.imageIdHovered && (
+                    <Box ml={1}>
+                      <Icon icon="duplicate" />
+                    </Box>
+                  )}
+                </Flex>
                 <Box mt={2}>
                   <P>{(container.SizeRootFs / 1000000).toFixed(1)} mb</P>
                   <P>{container.State}</P>
@@ -558,11 +613,11 @@ class Container extends Component {
                 {networks.map((network, i) => {
                   return (
                     <React.Fragment key={`network-${i}`}>
-                      <Flex w={1 / 5} column>
+                      <Flex w={1 / 8} column>
                         <p>{network.name}</p>
                       </Flex>
-                      <Flex w={4 / 5}>
-                        <Flex w={1 / 5} column>
+                      <Flex w={7 / 8}>
+                        <Flex w={1 / 8} column>
                           <p>Network ID</p>
                           <p>MAC Address</p>
                           <p>Endpoint ID</p>
@@ -570,8 +625,8 @@ class Container extends Component {
                           <p>Global IPv6</p>
                           <p>IP Address</p>
                         </Flex>
-                        <Flex w={4 / 5} column>
-                          {exists(_.truncate(network.data.NetworkID))}
+                        <Flex w={7 / 8} column>
+                          {exists(network.data.NetworkID)}
                           {exists(network.data.MacAddress)}
                           {exists(network.data.EndpointID)}
                           {exists(network.data.Gateway)}
