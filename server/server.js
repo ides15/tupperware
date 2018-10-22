@@ -6,7 +6,7 @@ const app = express();
 app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 
-process.env.REACT_APP_DOCKER_SOCK = "unix:/var/run/docker.sock:";
+process.env.DOCKER_SOCK = "unix:/var/run/docker.sock:";
 
 const info = require("./routes/info");
 const containers = require("./routes/containers");
@@ -23,7 +23,6 @@ app.use("/api/volumes", volumes);
 app.use(express.static(path.join(__dirname, "build")));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
-  res.sendFile(path.join(__dirname, "build", "favicon.ico"));
 });
 
 let port;

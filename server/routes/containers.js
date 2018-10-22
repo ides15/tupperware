@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const got = require("got");
 
-const DOCKER_SOCK = process.env.REACT_APP_DOCKER_SOCK;
+const DOCKER_SOCK = process.env.DOCKER_SOCK;
 
 const CONTAINERS = `${DOCKER_SOCK}/containers/json?all=true&size=true`;
 const CONTAINER_STOP = id => `${DOCKER_SOCK}/containers/${id}/stop`;
@@ -40,7 +40,6 @@ router.post("/stop", async (req, res) => {
 });
 
 router.post("/prune", async (req, res) => {
-  console.log("-----------------here---------------");
   console.log(CONTAINER_PRUNE);
 
   try {

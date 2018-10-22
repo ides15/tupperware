@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const got = require("got");
 
-const DOCKER_SOCK = process.env.REACT_APP_DOCKER_SOCK;
+const DOCKER_SOCK = process.env.DOCKER_SOCK;
 
 const IMAGES = `${DOCKER_SOCK}/images/json`;
 const IMAGE_REMOVE = id => `${DOCKER_SOCK}/images/${id}`;

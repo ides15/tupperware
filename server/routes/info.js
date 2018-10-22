@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const got = require("got");
 
-const DOCKER_SOCK = process.env.REACT_APP_DOCKER_SOCK;
+const DOCKER_SOCK = process.env.DOCKER_SOCK;
 
 const INFO = `${DOCKER_SOCK}/info`;
 
