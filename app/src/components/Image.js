@@ -32,7 +32,6 @@ const P = styled.p`
 class Image extends Component {
   state = {
     isOpen: false,
-    disabled: false,
     removeIsLoading: false,
     imageIdHovered: false,
     parentIdHovered: false
@@ -44,9 +43,6 @@ class Image extends Component {
     if (openImages && openImages.includes(this.props.image.Id)) {
       this.setOpen(true);
     }
-
-    if (this.props.image.RepoTags[0].includes("ides15/tupperware"))
-      this.setState({ disabled: true });
   }
 
   saveToStorage = id => {
@@ -170,7 +166,6 @@ class Image extends Component {
                     isDisabled
                   >
                     <AnchorButton
-                      disabled={this.state.disabled}
                       minimal
                       loading={this.state.removeIsLoading}
                       icon="trash"

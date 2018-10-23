@@ -10,8 +10,13 @@ router.get("/", async (req, res) => {
   console.log(IMAGES);
 
   try {
-    const data = await got(IMAGES);
-    res.send(data.body);
+    let data = await got(IMAGES);
+
+    data = JSON.parse(data.body).filter(image => {
+      return !image.RepoTags[0].includes("ides15/tupperware");
+    });
+
+    res.send(data);
   } catch (error) {
     console.error(error);
   }

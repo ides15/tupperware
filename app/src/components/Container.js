@@ -43,7 +43,6 @@ const P = styled.p`
 class Container extends Component {
   state = {
     isOpen: false,
-    disabled: false,
     startIsLoading: false,
     unpauseIsLoading: false,
     pauseIsLoading: false,
@@ -60,9 +59,6 @@ class Container extends Component {
     if (openContainers && openContainers.includes(this.props.container.Id)) {
       this.setOpen(true);
     }
-
-    if (this.props.container.Image.includes("ides15/tupperware"))
-      this.setState({ disabled: true });
   }
 
   saveToStorage = id => {
@@ -439,7 +435,6 @@ class Container extends Component {
                       position={Position.BOTTOM}
                     >
                       <AnchorButton
-                        disabled={this.state.disabled}
                         minimal
                         loading={this.state.startIsLoading}
                         icon="play"
@@ -454,7 +449,6 @@ class Container extends Component {
                       position={Position.BOTTOM}
                     >
                       <AnchorButton
-                        disabled={this.state.disabled}
                         minimal
                         loading={this.state.unpauseIsLoading}
                         icon="play"
@@ -469,7 +463,6 @@ class Container extends Component {
                       position={Position.BOTTOM}
                     >
                       <AnchorButton
-                        disabled={this.state.disabled}
                         minimal
                         loading={this.state.pauseIsLoading}
                         icon="pause"
@@ -484,7 +477,6 @@ class Container extends Component {
                     isDisabled
                   >
                     <AnchorButton
-                      disabled={this.state.disabled}
                       minimal
                       loading={this.state.restartIsLoading}
                       icon="refresh"
@@ -498,7 +490,6 @@ class Container extends Component {
                       position={Position.BOTTOM}
                     >
                       <AnchorButton
-                        disabled={this.state.disabled}
                         minimal
                         loading={this.state.stopIsLoading}
                         icon="stop"
@@ -512,7 +503,6 @@ class Container extends Component {
                     position={Position.BOTTOM}
                   >
                     <AnchorButton
-                      disabled={this.state.disabled}
                       minimal
                       loading={this.state.removeIsLoading}
                       icon="trash"
