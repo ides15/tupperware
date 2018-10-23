@@ -16,6 +16,7 @@ import { Flex, Box } from "reflexbox";
 import _ from "lodash";
 import moment from "moment";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import Logs from "./Logs";
 
 const Tooltip = styled(T)`
   flex: 1;
@@ -34,10 +35,10 @@ const P = styled.p`
   font-weight: bold;
 `;
 
-const exists = data => {
-  if (data) return <P>{data}</P>;
-  return <p>n/a</p>;
-};
+// const exists = data => {
+//   if (data) return <P>{data}</P>;
+//   return <p>n/a</p>;
+// };
 
 class Container extends Component {
   state = {
@@ -607,7 +608,8 @@ class Container extends Component {
                 </Box>
               </Flex>
             </Flex>
-            <Flex mt={2} column>
+            <Logs container={container} />
+            {/* <Flex mt={2} column>
               <h3>Networks</h3>
               <Flex pb={1}>
                 {networks.map((network, i) => {
@@ -638,7 +640,7 @@ class Container extends Component {
                   );
                 })}
               </Flex>
-            </Flex>
+            </Flex> */}
           </Collapse>
         </Card>
       </Box>
