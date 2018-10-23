@@ -15,6 +15,8 @@ const CONTAINER_RENAME = (id, name) =>
   `${DOCKER_SOCK}/containers/${id}/rename?name=${name}`;
 const CONTAINER_PAUSE = id => `${DOCKER_SOCK}/containers/${id}/pause`;
 const CONTAINER_UNPAUSE = id => `${DOCKER_SOCK}/containers/${id}/unpause`;
+const CONTAINER_LOGS = id =>
+  `${DOCKER_SOCK}/containers/${id}/logs?stdout=true&stderr=true`;
 
 router.get("/", async (req, res) => {
   console.log(CONTAINERS);
@@ -83,6 +85,26 @@ router.post("/:containerId", async (req, res) => {
   } catch (error) {
     res.sendStatus(error.statusCode);
     console.error("Error", error);
+  }
+});
+
+router.get("/:containerId/logs", async (req, res) => {
+  console.log(CONTAINER_LOGS(req.params.containerId));
+
+  try {
+    const data = await got(CONTAINER_LOGS(req.params.containerId));
+
+    let logs = data.body.split("\n");
+    let text = [];
+
+    logs.map(log => {
+      // header parsing can go here
+      text.push(`${log.substring(8)}`);
+    });
+
+    res.send(JSON.stringify(text));
+  } catch (error) {
+    console.error(error);
   }
 });
 
