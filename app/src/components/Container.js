@@ -25,8 +25,6 @@ const Card = styled(C)`
 
 const Name = styled.h3`
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const P = styled.p`
@@ -266,15 +264,16 @@ class Container extends Component {
     this.setState({ restartIsLoading: false });
   };
 
-  renameContainer = async (container, name) => {
+  renameContainer = async (container, updatedName) => {
     let response, status, intent;
+    const originalName = container.Names[0];
 
     // If the use clicks away without changing anything
-    if (container.Names[0] === name) return;
+    if (originalName === updatedName) return;
 
     try {
       response = await fetch(
-        `/api/containers/${container.Id}/rename?name=${name}`,
+        `/api/containers/${container.Id}/rename?name=${updatedName}`,
         {
           method: "POST"
         }
@@ -285,11 +284,11 @@ class Container extends Component {
 
     switch (await response.status) {
       case 204:
-        status = `Container renamed to '${name}'`;
+        status = `Container renamed to '${updatedName}'`;
         intent = "success";
         break;
       case 400:
-        status = `Error renaming to '${name}'`;
+        status = `Error renaming to '${updatedName}'`;
         intent = "danger";
         break;
       case 404:
@@ -297,7 +296,7 @@ class Container extends Component {
         intent = "danger";
         break;
       case 409:
-        status = `The name ${name} is already in use`;
+        status = `The name ${updatedName} is already in use`;
         intent = "danger";
         break;
       case 500:
