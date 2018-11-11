@@ -11,10 +11,7 @@ router.get("/", async (req, res) => {
 
   try {
     let data = await got(IMAGES);
-
-    data = JSON.parse(data.body).filter(image => {
-      return !image.RepoTags[0].includes("ides15/tupperware");
-    });
+    data = JSON.parse(data.body);
 
     res.send(data);
   } catch (error) {

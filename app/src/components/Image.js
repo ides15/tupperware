@@ -142,41 +142,46 @@ class Image extends Component {
     return (
       <Box mt={1}>
         <Card interactive>
-          {image.RepoTags.map((tag, i) => (
-            <Flex
-              py={1}
-              justify="space-between"
-              key={image.Id}
-              onClick={() => this.setOpen()}
-            >
-              <Flex align="center">
-                <ImageTag>{tag}</ImageTag>
-                <Box ml={2}>
-                  {`Created ${moment.unix(image.Created).fromNow()}`}
-                </Box>
+          {image.RepoTags.map((tag, i) => {
+            const disabled = tag.includes("tupperware");
+
+            return (
+              <Flex
+                py={1}
+                justify="space-between"
+                key={image.Id}
+                onClick={() => this.setOpen()}
+              >
+                <Flex align="center">
+                  <ImageTag>{tag}</ImageTag>
+                  <Box ml={2}>
+                    {`Created ${moment.unix(image.Created).fromNow()}`}
+                  </Box>
+                </Flex>
+                <Flex align="center">
+                  <Box mr={2}>
+                    <Tag round>{(image.Size / 1000000).toFixed(1)} mb</Tag>
+                  </Box>
+                  <ButtonGroup fill large>
+                    <Tooltip
+                      content="Remove image"
+                      position={Position.BOTTOM}
+                      isDisabled
+                    >
+                      <AnchorButton
+                        disabled={disabled}
+                        minimal
+                        loading={this.state.removeIsLoading}
+                        icon="trash"
+                        intent="danger"
+                        onClick={e => this.removeImage(e, image)}
+                      />
+                    </Tooltip>
+                  </ButtonGroup>
+                </Flex>
               </Flex>
-              <Flex align="center">
-                <Box mr={2}>
-                  <Tag round>{(image.Size / 1000000).toFixed(1)} mb</Tag>
-                </Box>
-                <ButtonGroup fill large>
-                  <Tooltip
-                    content="Remove image"
-                    position={Position.BOTTOM}
-                    isDisabled
-                  >
-                    <AnchorButton
-                      minimal
-                      loading={this.state.removeIsLoading}
-                      icon="trash"
-                      intent="danger"
-                      onClick={e => this.removeImage(e, image)}
-                    />
-                  </Tooltip>
-                </ButtonGroup>
-              </Flex>
-            </Flex>
-          ))}
+            );
+          })}
           <Collapse isOpen={this.state.isOpen}>
             <Flex pt={1}>
               <Flex w={1 / 8} column>

@@ -23,10 +23,7 @@ router.get("/", async (req, res) => {
 
   try {
     let data = await got(CONTAINERS);
-
-    data = JSON.parse(data.body).filter(container => {
-      return !container.Image.includes("ides15/tupperware");
-    });
+    data = JSON.parse(data.body);
 
     res.send(data);
   } catch (error) {

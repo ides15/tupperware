@@ -7,7 +7,7 @@ import {
   AnchorButton,
   ButtonGroup,
   Position,
-  Tooltip as T,
+  Tooltip,
   Tag,
   EditableText,
   Icon
@@ -18,10 +18,6 @@ import moment from "moment";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Logs from "./Logs";
 
-const Tooltip = styled(T)`
-  flex: 1;
-`;
-
 const Card = styled(C)`
   padding-top: 0;
   padding-bottom: 0;
@@ -29,16 +25,15 @@ const Card = styled(C)`
 
 const Name = styled.h3`
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const P = styled.p`
   font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
-
-// const exists = data => {
-//   if (data) return <P>{data}</P>;
-//   return <p>n/a</p>;
-// };
 
 class Container extends Component {
   state = {
@@ -404,117 +399,126 @@ class Container extends Component {
     return (
       <Box mt={1}>
         <Card interactive>
-          {container.Names.map((name, j) => (
-            <Flex
-              py={1}
-              justify="space-between"
-              key={container.Id}
-              onClick={() => this.setOpen()}
-            >
-              <Flex align="center">
-                <Box mr={2}>
-                  <Tag intent="primary" round>
-                    {container.Image}
-                  </Tag>
-                </Box>
-                <Name>
-                  <EditableText
-                    defaultValue={name}
-                    selectAllOnFocus
-                    confirmOnEnterKey
-                    onConfirm={name => this.renameContainer(container, name)}
-                  />
-                </Name>
-                <Box ml={2}>{container.Status}</Box>
-              </Flex>
-              <Flex align="center">
-                <ButtonGroup fill large>
-                  {container.State === "exited" && (
-                    <Tooltip
-                      content="Start container"
-                      position={Position.BOTTOM}
-                    >
-                      <AnchorButton
-                        minimal
-                        loading={this.state.startIsLoading}
-                        icon="play"
-                        intent="primary"
-                        onClick={e => this.startContainer(e, container)}
-                      />
-                    </Tooltip>
-                  )}
-                  {container.State === "paused" && (
-                    <Tooltip
-                      content="Unpause container"
-                      position={Position.BOTTOM}
-                    >
-                      <AnchorButton
-                        minimal
-                        loading={this.state.unpauseIsLoading}
-                        icon="play"
-                        intent="primary"
-                        onClick={e => this.unpauseContainer(e, container)}
-                      />
-                    </Tooltip>
-                  )}
-                  {container.State === "running" && (
-                    <Tooltip
-                      content="Pause container"
-                      position={Position.BOTTOM}
-                    >
-                      <AnchorButton
-                        minimal
-                        loading={this.state.pauseIsLoading}
-                        icon="pause"
-                        intent="primary"
-                        onClick={e => this.pauseContainer(e, container)}
-                      />
-                    </Tooltip>
-                  )}
-                  <Tooltip
-                    content="Restart container"
-                    position={Position.BOTTOM}
-                    isDisabled
-                  >
-                    <AnchorButton
-                      minimal
-                      loading={this.state.restartIsLoading}
-                      icon="refresh"
-                      intent="warning"
-                      onClick={e => this.restartContainer(e, container)}
+          {container.Names.map((name, j) => {
+            const disabled = container.Image.includes("tupperware");
+
+            return (
+              <Flex
+                py={1}
+                justify="space-between"
+                key={container.Id}
+                onClick={() => this.setOpen()}
+              >
+                <Flex align="center">
+                  <Box mr={2}>
+                    <Tag intent="primary" round>
+                      {container.Image}
+                    </Tag>
+                  </Box>
+                  <Name>
+                    <EditableText
+                      defaultValue={name}
+                      selectAllOnFocus
+                      confirmOnEnterKey
+                      onConfirm={name => this.renameContainer(container, name)}
                     />
-                  </Tooltip>
-                  {container.State !== "exited" && (
+                  </Name>
+                  <Box ml={2}>{container.Status}</Box>
+                </Flex>
+                <Flex align="center">
+                  <ButtonGroup fill large>
+                    {container.State === "exited" && (
+                      <Tooltip
+                        content="Start container"
+                        position={Position.BOTTOM}
+                      >
+                        <AnchorButton
+                          disabled={disabled}
+                          minimal
+                          loading={this.state.startIsLoading}
+                          icon="play"
+                          intent="primary"
+                          onClick={e => this.startContainer(e, container)}
+                        />
+                      </Tooltip>
+                    )}
+                    {container.State === "paused" && (
+                      <Tooltip
+                        content="Unpause container"
+                        position={Position.BOTTOM}
+                      >
+                        <AnchorButton
+                          disabled={disabled}
+                          minimal
+                          loading={this.state.unpauseIsLoading}
+                          icon="play"
+                          intent="primary"
+                          onClick={e => this.unpauseContainer(e, container)}
+                        />
+                      </Tooltip>
+                    )}
+                    {container.State === "running" && (
+                      <Tooltip
+                        content="Pause container"
+                        position={Position.BOTTOM}
+                      >
+                        <AnchorButton
+                          disabled={disabled}
+                          minimal
+                          loading={this.state.pauseIsLoading}
+                          icon="pause"
+                          intent="primary"
+                          onClick={e => this.pauseContainer(e, container)}
+                        />
+                      </Tooltip>
+                    )}
                     <Tooltip
-                      content="Stop container"
+                      content="Restart container"
+                      position={Position.BOTTOM}
+                      isDisabled
+                    >
+                      <AnchorButton
+                        disabled={disabled}
+                        minimal
+                        loading={this.state.restartIsLoading}
+                        icon="refresh"
+                        intent="warning"
+                        onClick={e => this.restartContainer(e, container)}
+                      />
+                    </Tooltip>
+                    {container.State !== "exited" && (
+                      <Tooltip
+                        content="Stop container"
+                        position={Position.BOTTOM}
+                      >
+                        <AnchorButton
+                          disabled={disabled}
+                          minimal
+                          loading={this.state.stopIsLoading}
+                          icon="stop"
+                          intent="danger"
+                          onClick={e => this.stopContainer(e, container)}
+                        />
+                      </Tooltip>
+                    )}
+                    <Tooltip
+                      content="Remove container"
                       position={Position.BOTTOM}
                     >
                       <AnchorButton
+                        disabled={disabled}
                         minimal
-                        loading={this.state.stopIsLoading}
-                        icon="stop"
+                        loading={this.state.removeIsLoading}
+                        icon="trash"
                         intent="danger"
-                        onClick={e => this.stopContainer(e, container)}
+                        onClick={e => this.removeContainer(e, container)}
                       />
                     </Tooltip>
-                  )}
-                  <Tooltip
-                    content="Remove container"
-                    position={Position.BOTTOM}
-                  >
-                    <AnchorButton
-                      minimal
-                      loading={this.state.removeIsLoading}
-                      icon="trash"
-                      intent="danger"
-                      onClick={e => this.removeContainer(e, container)}
-                    />
-                  </Tooltip>
-                </ButtonGroup>
-                {container.Ports[0] &&
-                  container.Ports[0].IP && (
+                  </ButtonGroup>
+                  {container.Ports[0] && container.Ports[0].IP && (
                     <Tooltip content="Open site" position={Position.BOTTOM}>
                       <AnchorButton
+                        disabled={disabled}
                         minimal
                         large
                         icon="share"
@@ -530,9 +534,10 @@ class Container extends Component {
                       />
                     </Tooltip>
                   )}
+                </Flex>
               </Flex>
-            </Flex>
-          ))}
+            );
+          })}
           <Collapse isOpen={this.state.isOpen}>
             <Flex pt={1}>
               <Flex w={1 / 8} column>
