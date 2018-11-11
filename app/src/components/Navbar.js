@@ -5,13 +5,14 @@ import {
   NavbarGroup,
   Alignment,
   NavbarHeading,
-  ButtonGroup
+  ButtonGroup,
+  Button
 } from "@blueprintjs/core";
 import { Flex } from "reflexbox";
 
 import APIButton from "./APIButton";
 
-const Navbar = () => {
+const Navbar = ({ darkTheme, toggleDarkTheme }) => {
   return (
     <Nav>
       <NavbarGroup>
@@ -36,7 +37,9 @@ const Navbar = () => {
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>
         <Flex align="center">
-          <b>shift + d</b>
+          <Button minimal onClick={() => toggleDarkTheme()}>
+            <b>shift + d</b>
+          </Button>
         </Flex>
       </NavbarGroup>
     </Nav>

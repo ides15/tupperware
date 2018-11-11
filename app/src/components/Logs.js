@@ -15,6 +15,8 @@ const Log = styled.code`
   color: #e1e8ed;
   font-size: 16px;
   margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
 
   ${props => `color: ${props.color}`};
 `;
@@ -50,16 +52,20 @@ class Logs extends Component {
 
   render() {
     return (
-      <Flex w={1} pb={2}>
-        <Shell column w={1} p={1}>
-          <Log color={"limegreen"}>Update logs with shift + u</Log>
-          {this.state.logs.map((log, i) => {
-            if (this.state.logs.length <= 1)
-              return <Log key={`log-${i}`}>No logs for this container</Log>;
-            return <Log key={`log-${i}`}>{log}</Log>;
-          })}
-        </Shell>
-      </Flex>
+      <>
+        {!this.props.container.Image.includes("tupperware") && (
+          <Flex w={1} pb={2}>
+            <Shell column w={1} p={1}>
+              <Log color={"limegreen"}>Update logs with shift + u</Log>
+              {this.state.logs.map((log, i) => {
+                if (this.state.logs.length <= 1)
+                  return <Log key={`log-${i}`}>No logs for this container</Log>;
+                return <Log key={`log-${i}`}>{log}</Log>;
+              })}
+            </Shell>
+          </Flex>
+        )}
+      </>
     );
   }
 }

@@ -1,36 +1,29 @@
 import React, { Component } from "react";
 
-import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
 import styled from "styled-components";
-import { Flex, Box } from "reflexbox";
-import {
-  Navbar,
-  NavbarGroup,
-  Alignment,
-  NavbarHeading,
-  Card,
-  ButtonGroup,
-  Hotkey,
-  HotkeysTarget,
-  Hotkeys
-} from "@blueprintjs/core";
+import { Card, Hotkey, HotkeysTarget, Hotkeys } from "@blueprintjs/core";
 
-import APIButton from "./components/APIButton";
+import Navbar from "./components/Navbar";
 import Info from "./components/pages/Info";
 import Containers from "./components/pages/Containers";
 import Images from "./components/pages/Images";
 import Networks from "./components/pages/Networks";
 import Volumes from "./components/pages/Volumes";
 
-const DarkContainer = styled(Card)`
+const Main = styled.div`
+  display: inline-flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: hidden;
+`;
+
+const Container = styled(Card)`
   height: 100%;
   padding: 0;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow: auto;
+  overflow-y: auto;
 `;
 
 class App extends Component {
@@ -38,14 +31,18 @@ class App extends Component {
     dark: false
   };
 
+  setDarkInStorage = () => localStorage.setItem("dark", this.state.dark);
+
+  toggleDarkTheme = dark => {
+    if (dark === undefined)
+      this.setState({ dark: !this.state.dark }, () => this.setDarkInStorage());
+    else this.setState({ dark }, () => this.setDarkInStorage());
+  };
+
   componentDidMount() {
     const dark = localStorage.getItem("dark");
 
-    if (dark === "true") {
-      this.setState({
-        dark: true
-      });
-    }
+    if (dark === "true") this.toggleDarkTheme(true);
   }
 
   renderHotkeys() {
@@ -54,16 +51,7 @@ class App extends Component {
         <Hotkey
           global={true}
           combo="shift + d"
-          onKeyDown={() => {
-            this.setState(
-              prevState => ({
-                dark: !prevState.dark
-              }),
-              () => {
-                localStorage.setItem("dark", this.state.dark);
-              }
-            );
-          }}
+          onKeyDown={() => this.toggleDarkTheme()}
         />
       </Hotkeys>
     );
@@ -71,59 +59,20 @@ class App extends Component {
 
   render() {
     return (
-      <DarkContainer className={this.state.dark && "bp3-dark"}>
-        <Router>
-          <Flex column>
-            <Route
-              exact
-              path="/"
-              render={() => <Redirect to="/containers" />}
-            />
-            <Box>
-              <Navbar>
-                <NavbarGroup>
-                  <NavbarHeading>Tupperware</NavbarHeading>
-                  <ButtonGroup>
-                    <APIButton route="/info" icon="info-sign" intent="primary">
-                      Info
-                    </APIButton>
-                    <APIButton route="/containers" icon="box" intent="warning">
-                      Containers
-                    </APIButton>
-                    <APIButton
-                      route="/images"
-                      icon="application"
-                      intent="danger"
-                    >
-                      Images
-                    </APIButton>
-                    <APIButton
-                      route="/networks"
-                      icon="globe-network"
-                      intent="success"
-                    >
-                      Networks
-                    </APIButton>
-                    <APIButton route="/volumes" icon="database">
-                      Volumes
-                    </APIButton>
-                  </ButtonGroup>
-                </NavbarGroup>
-                <NavbarGroup align={Alignment.RIGHT}>
-                  <Flex align="center">
-                    <b>shift + d</b>
-                  </Flex>
-                </NavbarGroup>
-              </Navbar>
-            </Box>
-            <Info />
-            <Containers />
-            <Images />
-            <Networks />
-            <Volumes />
-          </Flex>
-        </Router>
-      </DarkContainer>
+      <Main className={this.state.dark && "bp3-dark"}>
+        <Navbar
+          darkTheme={this.state.dark}
+          toggleDarkTheme={this.toggleDarkTheme}
+        />
+        <Container column="true">
+          <Route exact path="/" render={() => <Redirect to="/containers" />} />
+          <Info />
+          <Containers />
+          <Images />
+          <Networks />
+          <Volumes />
+        </Container>
+      </Main>
     );
   }
 }
