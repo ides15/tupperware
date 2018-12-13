@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { Flex, Box } from "reflexbox";
 import {
-  Collapse,
+  Collapse as C,
   Tag,
   Button,
   Icon,
@@ -17,6 +17,12 @@ import Image from "../Image";
 
 const Title = styled.h2`
   margin: 0;
+`;
+
+const Collapse = styled(C)`
+  max-width: 1750px;
+  width: 100%;
+  margin: auto;
 `;
 
 class Images extends Component {

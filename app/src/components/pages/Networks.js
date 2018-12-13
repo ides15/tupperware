@@ -1,12 +1,18 @@
 import React from "react";
 
-import { Collapse } from "@blueprintjs/core";
+import { Collapse as C } from "@blueprintjs/core";
 import { Route } from "react-router-dom";
 import styled from "styled-components";
 import { Box } from "reflexbox";
 
 const Title = styled.h2`
   margin: 0;
+`;
+
+const Collapse = styled(C)`
+  max-width: 1750px;
+  width: 100%;
+  margin: auto;
 `;
 
 const Networks = () => {

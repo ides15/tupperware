@@ -5,7 +5,7 @@ import {
   AnchorButton,
   Button,
   Icon,
-  Collapse,
+  Collapse as C,
   Tooltip,
   Position,
   Tag,
@@ -21,6 +21,12 @@ import CreateContainer from "../CreateContainer";
 
 const Title = styled.h2`
   margin: 0;
+`;
+
+const Collapse = styled(C)`
+  max-width: 1750px;
+  width: 100%;
+  margin: auto;
 `;
 
 class Containers extends Component {
