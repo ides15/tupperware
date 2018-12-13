@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 
 import styled from "styled-components";
-// import _ from 'lodash'
 import { Flex, Box } from "reflexbox";
 import {
   Collapse,

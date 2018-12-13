@@ -27,6 +27,8 @@ const ImageTag = styled.h3`
 
 const P = styled.p`
   font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 class Image extends Component {

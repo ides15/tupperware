@@ -24,6 +24,7 @@ const Container = styled(Card)`
   height: 100%;
   padding: 0;
   overflow-y: auto;
+  border-radius: 0px;
 `;
 
 class App extends Component {

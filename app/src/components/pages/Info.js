@@ -1,17 +1,18 @@
 import React, { Component } from "react";
 
-import { Collapse, Card } from "@blueprintjs/core";
+import { Collapse } from "@blueprintjs/core";
 import { Route } from "react-router-dom";
-// import { Flex } from "reflexbox";
+import { Box } from "reflexbox";
+import styled from "styled-components";
+
+const Title = styled.h2`
+  margin: 0;
+`;
 
 class Info extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      info: null
-    };
-  }
+  state = {
+    info: null
+  };
 
   async componentDidMount() {
     const info = await fetch("/api/info");
@@ -26,8 +27,8 @@ class Info extends Component {
         path="/info"
         render={({ match }) => (
           <Collapse isOpen={match}>
-            <Card>
-              <h2>Info</h2>
+            <Box p={2}>
+              <Title>Info</Title>
               {/* {info && (
                 <Flex column>
                   <Flex>
@@ -40,7 +41,7 @@ class Info extends Component {
                   </Flex>
                 </Flex>
               )} */}
-            </Card>
+            </Box>
           </Collapse>
         )}
       />
